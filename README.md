@@ -1,19 +1,15 @@
-# Peripheral Control Computer Firmware
+# Deadalus Robotics Peripheral Control Computer Firmware
 
 ## Setup
 
-Run
-
-```bash
-python setup.py
-```
+Install platformio
 
 ## Building
 
 To build the firmware, run
 
 ```bash
-python build.py
+pio run
 ```
 
 This will create a `pcc_firmware.<hash>.bin` file in `PCC/.pio/build/adafruit_feather_m4`.
