@@ -17,7 +17,6 @@ void AVRServo::close_servo(uint8_t servo)
 
 void AVRServo::set_servo_percent(uint8_t servo, uint8_t percent)
 {
-    Serial.println(servo_min[servo]);
     if (percent > 100)
         percent = 100;
 
