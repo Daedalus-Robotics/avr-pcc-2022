@@ -203,21 +203,21 @@ void loop()
       servos.set_servo_max(which_servo, absolute);
     }
     break;
-    case SET_SERVO_OPEN_CLOSE:
-    {
-      uint8_t which_servo = message.data[0];
-      uint8_t value = message.data[1];
-
-      if (value > 127)
-      {
-          servos.open_servo(which_servo);
-      }
-      else
-      {
-          servos.close_servo(which_servo);
-      }
-    }
-    break;
+//    case SET_SERVO_OPEN_CLOSE:
+//    {
+//      uint8_t which_servo = message.data[0];
+//      uint8_t value = message.data[1];
+//
+//      if (value > 127)
+//      {
+//          servos.open_servo(which_servo);
+//      }
+//      else
+//      {
+//          servos.close_servo(which_servo);
+//      }
+//    }
+//    break;
     case SET_SERVO_PCT:
     {
         uint8_t which_servo = message.data[0];
