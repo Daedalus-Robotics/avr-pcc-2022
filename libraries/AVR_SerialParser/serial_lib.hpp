@@ -31,6 +31,7 @@ typedef enum
     SET_ONBOARD_TEMP_COLOR,
     COLOR_WIPE,
     FIRE_LASER_COUNT,
+    SET_BLUE_ANIM,
     COMMAND_END
 } commands;
 
