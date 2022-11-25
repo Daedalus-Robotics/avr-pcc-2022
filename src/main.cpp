@@ -27,6 +27,12 @@ AVRSerialParser serial(Serial, q);
 
 #define NUM_PIXELS 30
 
+#define BLUE_ANIM_COLOR_0 0xFF000000
+#define BLUE_ANIM_COLOR_1 0xFF000000
+#define BLUE_ANIM_COLOR_2 0xFF000000
+
+#define BLUE_ANIM_DELAY 10
+
 AVRLED strip(NEO_PIN, NUM_PIXELS, NEO_GRB);
 AVRLED onboard(8, 2, NEO_GRB);
 ///////////////////////////////////////////////////////////////
@@ -97,7 +103,13 @@ int laser_on_count = 0;
 unsigned long light_on = 0;
 unsigned long laser_on = 0;
 
+double last_anim_update = 0;
+int blue_anim_on = 0;
+int blue_anim_state = 0;
 
+int last_pixel = 0;
+int this_pixel = 0;
+int next_pixel = 0;
 
 
 void loop()
@@ -160,7 +172,7 @@ void loop()
   
         memcpy(&time, &message.data[3], sizeof(float));
   
-        uint32_t long_time = (uint32_t)(time * 1000.0);
+        uint32_t long_time = (uint32_t) (time * 1000.0);
         onboard.set_temp_color_target(0,red,green,blue);
         onboard.show_temp_color(long_time);
     }
@@ -176,7 +188,7 @@ void loop()
       uint8_t which_servo = message.data[0];
       uint8_t absolute_high = message.data[1];
       uint8_t absolute_low = message.data[2];
-      uint16_t absolute = ((uint16_t)absolute_high << 8) | absolute_low;
+      uint16_t absolute = ((uint16_t) absolute_high << 8) | absolute_low;
 
       servos.set_servo_min(which_servo, absolute);
     }
@@ -186,7 +198,7 @@ void loop()
       uint8_t which_servo = message.data[0];
       uint8_t absolute_high = message.data[1];
       uint8_t absolute_low = message.data[2];
-      uint16_t absolute = ((uint16_t)absolute_high << 8) | absolute_low;
+      uint16_t absolute = ((uint16_t) absolute_high << 8) | absolute_low;
 
       servos.set_servo_max(which_servo, absolute);
     }
@@ -270,7 +282,44 @@ void loop()
       laser_on_count = count - 1;
     }
     break;
+    case SET_BLUE_ANIM:
+    {
+        uint8_t enabled = message.data[0];
+        blue_anim_on = enabled;
+        blue_anim_state = 0;
+        strip.set_anim_active(enabled);
     }
+    break;
+    }
+  }
+
+  if (blue_anim_on && (millis() - last_anim_update > BLUE_ANIM_DELAY))
+  {
+      blue_anim_state++;
+      blue_anim_state %= NUM_PIXELS;
+
+      last_pixel = (blue_anim_state - 1) % NUM_PIXELS;
+      this_pixel = blue_anim_state;
+      next_pixel = (blue_anim_state + 1) % NUM_PIXELS;
+
+      for(int i = 0; i < NUM_PIXELS; i++)
+      {
+          if (i == last_pixel || i == next_pixel)
+          {
+              strip.setPixelColor(i, BLUE_ANIM_COLOR_1);
+          }
+          else if (i == this_pixel)
+          {
+              strip.setPixelColor(i, BLUE_ANIM_COLOR_2);
+          }
+          else
+          {
+              strip.setPixelColor(i, BLUE_ANIM_COLOR_0);
+          }
+      }
+      strip.show();
+
+      last_anim_update = millis();
   }
 
   if (millis() - light_on > 100)

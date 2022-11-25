@@ -5,6 +5,17 @@ AVRLED::AVRLED(uint8_t pin, uint8_t num_pixels, neoPixelType t) : Adafruit_NeoPi
     current_color = 255 << 24;
 }
 
+void AVRLED::set_anim_active(int active)
+{
+    anim_running = active;
+    if (!anim_running)
+    {
+        temp_running = false;
+        current_color = base_color;
+        needs_color_update = true;
+    }
+}
+
 void AVRLED::show_temp_color(uint32_t seconds)
 {
     //set up the operation
@@ -45,14 +56,17 @@ void AVRLED::set_base_color_target(uint8_t white, uint8_t red, uint8_t green, ui
 
 void AVRLED::set_strip_color()
 {
-    //update the memory matrix for the strip color
-    uint16_t i = 0;
-    for (i = 0; i < numPixels(); i++)
+    if (!anim_running)
     {
-        setPixelColor(i, current_color);
-    }
+        //update the memory matrix for the strip color
+        uint16_t i = 0;
+        for (i = 0; i < numPixels(); i++)
+        {
+            setPixelColor(i, current_color);
+        }
 
-    needs_color_update = true;
+        needs_color_update = true;
+    }
 }
 
 void AVRLED::run(void)
