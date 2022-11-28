@@ -27,6 +27,10 @@ void AVRServo::set_servo_percent(uint8_t servo, uint8_t percent)
 
 void AVRServo::set_servo_absolute(uint8_t servo, uint16_t absolute)
 {
+    if (absolute < servo_min[servo])
+        absolute = servo_min[servo];
+    if (absolute < servo_min[servo])
+        absolute = servo_max[servo];
     writeMicroseconds(servo, absolute);
 }
 
